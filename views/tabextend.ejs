@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Interact.js Example</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.9.13/interact.min.js"></script>
+  <style>
+    .container {
+      width: 200px;
+      height: 200px;
+      background-color: #ccc;
+      float: left;
+      margin: 10px;
+      user-select: none;
+      touch-action: none;
+      position: relative;
+    }
+  </style>
+</head>
+
+<body>
+  <% for (var i = 1; i <= 5; i++) { %>
+  <div class="container" id="container<%= i %>"><%= i %></div>
+  <% } %>
+  <script>
+    interact('.container')
+      .draggable({
+        onmove: dragMoveListener,
+        inertia: true,
+        restrict: {
+          restriction: "parent",
+          endOnly: true,
+          elementRect: {
+            top: 0,
+            left: 0,
+            bottom: 1,
+            right: 1
+          }
+        }
+      })
+      .on('hover', function(event) {
+        var currentContainer = event.target;
+        var currentId = currentContainer.id;
+        var currentIndex = currentId.slice(-1);
+
+        for (var i = 1; i <= 5; i++) {
+          if (i === parseInt(currentIndex)) {
+            document.getElementById("container" + i).style.transform = "scale(1.1)";
+          } else {
+            document.getElementById("container" + i).style.transform = "scale(1)";
+          }
+        }
+      });
+
+    function dragMoveListener(event) {
+      var target = event.target,
+        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+      target.style.webkitTransform =
+        target.style.transform =
+        'translate(' + x + 'px, ' + y + 'px)';
+
+      target.setAttribute('data-x', x);
+      target.setAttribute('data-y', y);
+    }
+
+    window.dragMoveListener = dragMoveListener;
+  </script>
+
+</body>
+
+</html>
